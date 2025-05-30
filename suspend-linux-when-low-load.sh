@@ -34,7 +34,10 @@ log() {
 get_load_average() {
     # /proc/loadavg contains three numbers: 1-min, 5-min, 15-min load averages
     # We want the second number (5-minute average)
-    awk '{print $2}' /proc/loadavg
+    if ! awk '{print $2}' /proc/loadavg; then
+        log "Error reading load average from /proc/loadavg"
+        return 1
+    fi
 }
 
 # Function to perform the suspend action
@@ -43,7 +46,10 @@ perform_suspend() {
     # You need root privileges for this.
     # systemctl is the modern way. pm-suspend is older.
     # echo mem > /sys/power/state is low-level.
-    systemctl suspend
+    if ! systemctl suspend; then
+        log "Error: Failed to suspend the system using systemctl."
+        return 1
+    fi
     # This point is reached *after* the system resumes from suspend
     log "System resumed from suspend. Resuming monitoring."
 }
@@ -58,14 +64,20 @@ low_load_count=0
 
 while true; do
     # 1. Get current load average
-    current_load=$(get_load_average)
+    if ! current_load=$(get_load_average); then
+        log "Failed to determine load average."
+        exit 1
+    fi
     log "Current 5-min load average: ${current_load}"
 
     # 2. Check for manual override file
     if [ -f "${NO_SLEEP_FILE}" ]; then
         log "Override file '${NO_SLEEP_FILE}' found. Suspend prevented."
         low_load_count=0 # Reset count as we're intentionally not suspending
-        sleep "${CHECK_INTERVAL}"
+        if ! sleep "${CHECK_INTERVAL}"; then
+            log "Error: Failed to sleep for ${CHECK_INTERVAL} seconds."
+            exit 1
+        fi
         continue # Skip to next loop iteration
     fi
 
@@ -80,7 +92,10 @@ while true; do
         if [ "${low_load_count}" -ge "${CONSECUTIVE_CHECKS_REQUIRED}" ]; then
             # All conditions met: load is low consistently, no active users, no override.
             log "All conditions met: Load consistently low, system inactive."
-            perform_suspend
+            if ! perform_suspend; then
+                log "Error: Failed to perform suspend."
+                exit 1
+            fi
             # After suspend and resume, reset the count to prevent immediate re-suspend
             low_load_count=0
         fi
