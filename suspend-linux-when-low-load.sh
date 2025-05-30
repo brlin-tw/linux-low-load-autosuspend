@@ -37,42 +37,6 @@ get_load_average() {
     awk '{print $2}' /proc/loadavg
 }
 
-# Function to check if the system is currently active (users logged in, X session active)
-is_system_active() {
-    # Check for any active user sessions (local or SSH)
-    # Exclude system users like 'reboot' or 'runlevel'
-    if who | grep -v 'reboot' | grep -v 'runlevel' | grep -v 'LOGIN' | grep -q -v ' pts/0 ' ; then # 'pts/0' might be this script's own terminal
-        log "Active users detected."
-        return 0 # System is active
-    fi
-
-    # Check for active graphical sessions (Xorg processes or Wayland)
-    if pgrep -x Xorg >/dev/null || pgrep -x gnome-shell >/dev/null || pgrep -x kwin_wayland >/dev/null; then
-        log "Active graphical session detected."
-        return 0 # System is active
-    fi
-
-    # Check for active logind sessions (more robust)
-    if loginctl list-sessions --no-legend | awk '{print $1}' | while read -r session_id; do
-        if loginctl show-session "$session_id" | grep -q "State=active"; then
-            log "Active logind session detected (ID: $session_id)."
-            return 0 # System is active
-        fi
-    done; then
-        return 0 # System is active due to a logind session
-    fi
-
-    # Check for specific processes you might want to prevent sleep for (e.g., apt, rsync, backups)
-    # Add more `pgrep` commands as needed
-    if pgrep -x apt >/dev/null || pgrep -x rsync >/dev/null || pgrep -x borg >/dev/null; then
-        log "Specific critical process (apt, rsync, borg) detected."
-        return 0 # System is active
-    fi
-
-    # If no activity detected
-    return 1 # System is NOT active
-}
-
 # Function to perform the suspend action
 perform_suspend() {
     log "Initiating system suspend..."
@@ -114,17 +78,11 @@ while true; do
 
         # 4. Check if consecutive low-load conditions are met
         if [ "$low_load_count" -ge "$CONSECUTIVE_CHECKS_REQUIRED" ]; then
-            # 5. Perform final activity check before suspending
-            if is_system_active; then
-                log "System became active during low-load period. Resetting low load count."
-                low_load_count=0 # Reset because activity was detected
-            else
-                # All conditions met: load is low consistently, no active users, no override.
-                log "All conditions met: Load consistently low, system inactive."
-                perform_suspend
-                # After suspend and resume, reset the count to prevent immediate re-suspend
-                low_load_count=0
-            fi
+            # All conditions met: load is low consistently, no active users, no override.
+            log "All conditions met: Load consistently low, system inactive."
+            perform_suspend
+            # After suspend and resume, reset the count to prevent immediate re-suspend
+            low_load_count=0
         fi
     else
         # Load is NOT low. Reset the counter if it was accumulating.
