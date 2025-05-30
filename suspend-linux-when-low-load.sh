@@ -93,6 +93,11 @@ perform_suspend() {
     log "System resumed from suspend. Resuming monitoring."
 }
 
+if test "${EUID}" -ne 0; then
+    printf 'Error: This script must be run as root.\n' 1>&2
+    exit 1
+fi
+
 log "Auto-suspend script started. PID: $$"
 
 # Determine physical CPU cores and calculate actual load threshold
