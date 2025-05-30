@@ -18,10 +18,6 @@ CONSECUTIVE_CHECKS_REQUIRED=3
 # Path to the log file.
 LOG_FILE="/var/log/auto_suspend.log"
 
-# Path to a file that, if it exists, will prevent the system from suspending.
-# This is useful for manual override (e.g., during large downloads/compilations).
-NO_SLEEP_FILE="/tmp/no_auto_suspend"
-
 # Function to log messages with a timestamp
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "${LOG_FILE}"
@@ -63,16 +59,6 @@ while true; do
         exit 1
     fi
     log "Current 5-min load average: ${current_load}"
-
-    if [ -f "${NO_SLEEP_FILE}" ]; then
-        log "Override file '${NO_SLEEP_FILE}' found. Suspend prevented."
-        low_load_count=0 # Reset count as we're intentionally not suspending
-        if ! sleep "${CHECK_INTERVAL}"; then
-            log "Error: Failed to sleep for ${CHECK_INTERVAL} seconds."
-            exit 1
-        fi
-        continue
-    fi
 
     if (( $(echo "${current_load} < ${LOAD_THRESHOLD}" | bc -l) )); then
         # Load is low. Increment counter.
