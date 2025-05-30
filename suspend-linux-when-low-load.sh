@@ -10,11 +10,11 @@
 LOAD_THRESHOLD=0.5
 
 # Time (in seconds) between each load check.
-CHECK_INTERVAL=30
+CHECK_INTERVAL=300 # 5 minutes
 
 # How many consecutive times must the load be below the threshold and other conditions met
 # before suspending. This prevents accidental suspend during momentary dips.
-CONSECUTIVE_CHECKS_REQUIRED=5
+CONSECUTIVE_CHECKS_REQUIRED=3
 
 # Path to the log file.
 LOG_FILE="/var/log/auto_suspend.log"
