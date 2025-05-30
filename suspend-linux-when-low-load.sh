@@ -66,7 +66,34 @@ get_physical_cores() {
 
 # Function to log messages with a timestamp
 log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "${LOG_FILE}"
+    message="${1}"; shift
+
+    local potential_message_tag="${message%:*}"
+    local flag_msg_to_stderr=false
+    case "${potential_message_tag^^}" in
+        "ERROR"|"WARNING")
+            flag_msg_to_stderr=true
+            ;;
+        *)
+            :
+            ;;
+    esac
+
+    local timestamp
+    if ! timestamp="$(printf '%(%Y-%m-%d %H:%M:%S)T' -1)"; then
+        printf 'Error: Failed to generate timestamp.\n' 1>&2
+        return 1
+    fi
+
+    local log_entry
+    log_entry="${timestamp} - ${message}"
+
+    if test "${flag_msg_to_stderr}" == true; then
+        printf '%s\n' "${log_entry}" | tee -a "${LOG_FILE}" 1>&2
+    else
+        printf '%s\n' "${log_entry}" | tee -a "${LOG_FILE}"
+    fi
+    return 0
 }
 
 # Function to get the current 5-minute load average
