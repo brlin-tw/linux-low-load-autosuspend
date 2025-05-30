@@ -4,7 +4,6 @@
 # Copyright 2025 林博仁(Buo-ren Lin) <buo.ren.lin@gmail.com>
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-# --- Configuration ---
 # Threshold for 5-minute load average. If load goes below this, we start counting.
 # Adjust based on your CPU cores. For example, if you have 8 cores, 1.0 or 2.0 might be 'low'.
 LOAD_THRESHOLD=0.5
@@ -22,8 +21,6 @@ LOG_FILE="/var/log/auto_suspend.log"
 # Path to a file that, if it exists, will prevent the system from suspending.
 # This is useful for manual override (e.g., during large downloads/compilations).
 NO_SLEEP_FILE="/tmp/no_auto_suspend"
-
-# --- Functions ---
 
 # Function to log messages with a timestamp
 log() {
@@ -54,8 +51,6 @@ perform_suspend() {
     log "System resumed from suspend. Resuming monitoring."
 }
 
-# --- Main Logic ---
-
 log "Auto-suspend script started. PID: $$"
 log "Configuration: Load Threshold=${LOAD_THRESHOLD}, Check Interval=${CHECK_INTERVAL}s, Consecutive Checks=${CONSECUTIVE_CHECKS_REQUIRED}"
 
@@ -63,14 +58,12 @@ log "Configuration: Load Threshold=${LOAD_THRESHOLD}, Check Interval=${CHECK_INT
 low_load_count=0
 
 while true; do
-    # 1. Get current load average
     if ! current_load=$(get_load_average); then
         log "Failed to determine load average."
         exit 1
     fi
     log "Current 5-min load average: ${current_load}"
 
-    # 2. Check for manual override file
     if [ -f "${NO_SLEEP_FILE}" ]; then
         log "Override file '${NO_SLEEP_FILE}' found. Suspend prevented."
         low_load_count=0 # Reset count as we're intentionally not suspending
@@ -78,17 +71,14 @@ while true; do
             log "Error: Failed to sleep for ${CHECK_INTERVAL} seconds."
             exit 1
         fi
-        continue # Skip to next loop iteration
+        continue
     fi
 
-    # 3. Check if load is below threshold
-    # Using 'bc -l' for floating point comparison
     if (( $(echo "${current_load} < ${LOAD_THRESHOLD}" | bc -l) )); then
         # Load is low. Increment counter.
         low_load_count=$((low_load_count + 1))
         log "Load is low (${current_load} < ${LOAD_THRESHOLD}). Low load count: ${low_load_count}/${CONSECUTIVE_CHECKS_REQUIRED}"
 
-        # 4. Check if consecutive low-load conditions are met
         if [ "${low_load_count}" -ge "${CONSECUTIVE_CHECKS_REQUIRED}" ]; then
             # All conditions met: load is low consistently, no active users, no override.
             log "All conditions met: Load consistently low, system inactive."
@@ -109,6 +99,5 @@ while true; do
         fi
     fi
 
-    # Wait for the next check interval
     sleep "${CHECK_INTERVAL}"
 done
