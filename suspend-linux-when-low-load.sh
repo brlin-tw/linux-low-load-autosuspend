@@ -120,6 +120,24 @@ perform_suspend() {
     log "System resumed from suspend. Resuming monitoring."
 }
 
+required_commands=(
+    awk
+    bc
+    grep
+    head
+    sort
+    systemctl
+    tee
+    uniq
+    wc
+)
+for command in "${required_commands[@]}"; do
+    if ! command -v "${command}" &>/dev/null; then
+        log "Error: Required command \"${command}\" is not available."
+        exit 1
+    fi
+done
+
 if test "${EUID}" -ne 0; then
     printf 'Error: This script must be run as root.\n' 1>&2
     exit 1
