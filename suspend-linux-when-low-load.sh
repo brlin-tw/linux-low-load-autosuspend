@@ -6,14 +6,14 @@
 
 # Load threshold ratio (0.5 means half of physical cores are busy)
 # This will be multiplied by the number of physical cores to get the actual threshold
-LOAD_THRESHOLD_RATIO=0.5
+LOAD_THRESHOLD_RATIO="${LOAD_THRESHOLD_RATIO:-0.5}"
 
 # Time (in seconds) between each load check.
-CHECK_INTERVAL=300 # 5 minutes
+CHECK_INTERVAL="${CHECK_INTERVAL:-300}" # 5 minutes
 
 # How many consecutive times must the load be below the threshold and other conditions met
 # before suspending. This prevents accidental suspend during momentary dips.
-CONSECUTIVE_CHECKS_REQUIRED=3
+CONSECUTIVE_CHECKS_REQUIRED="${CONSECUTIVE_CHECKS_REQUIRED:-3}"
 
 # Path to the log file.
 LOG_FILE="/var/log/auto_suspend.log"
