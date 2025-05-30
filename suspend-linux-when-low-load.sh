@@ -18,6 +18,24 @@ CONSECUTIVE_CHECKS_REQUIRED=3
 # Path to the log file.
 LOG_FILE="/var/log/auto_suspend.log"
 
+set_opts=(
+    # Exit on unhandled errors
+    -o errexit
+    -o errtrace
+
+    # Treat unset variables as an error
+    -o nounset
+)
+if ! set "${set_opts[@]}"; then
+    printf 'Error: Failed to set shell options.\n' >&2
+    exit 1
+fi
+
+if ! trap 'printf "Error: Unhandled error occurred.\\n"; exit 99' ERR; then
+    printf 'Error: Failed to set ERR trap.\n' >&2
+    exit 1
+fi
+
 # Function to get the number of physical CPU cores (not threads)
 get_physical_cores() {
     # Get the number of unique physical processors and multiply by cores per processor
