@@ -34,12 +34,12 @@ get_physical_cores() {
     fi
 
     # Handle cases where the system might not report physical id (single CPU systems)
-    if [ "${physical_cpus}" -eq 0 ]; then
+    if test "${physical_cpus}" -eq 0; then
         physical_cpus=1
     fi
 
     # Handle cases where cores per processor might be empty
-    if [ -z "${cores_per_processor}" ]; then
+    if test -z "${cores_per_processor}"; then
         cores_per_processor=1
     fi
 
@@ -103,7 +103,7 @@ while true; do
         low_load_count=$((low_load_count + 1))
         log "Info: Load is low (${current_load} < ${LOAD_THRESHOLD}). Low load count: ${low_load_count}/${CONSECUTIVE_CHECKS_REQUIRED}"
 
-        if [ "${low_load_count}" -ge "${CONSECUTIVE_CHECKS_REQUIRED}" ]; then
+        if test "${low_load_count}" -ge "${CONSECUTIVE_CHECKS_REQUIRED}"; then
             # All conditions met: load is low consistently, no active users, no override.
             log "Info: All conditions met: Load consistently low, system inactive."
             if ! perform_suspend; then
@@ -115,7 +115,7 @@ while true; do
         fi
     else
         # Load is NOT low. Reset the counter if it was accumulating.
-        if [ "${low_load_count}" -gt 0 ]; then
+        if test "${low_load_count}" -gt 0; then
             log "Info: Load is no longer low (${current_load} >= ${LOAD_THRESHOLD}). Resetting low load count."
             low_load_count=0
         else
