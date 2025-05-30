@@ -4,9 +4,9 @@
 # Copyright 2025 林博仁(Buo-ren Lin) <buo.ren.lin@gmail.com>
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-# Threshold for 5-minute load average. If load goes below this, we start counting.
-# Adjust based on your CPU cores. For example, if you have 8 cores, 1.0 or 2.0 might be 'low'.
-LOAD_THRESHOLD=0.5
+# Load threshold ratio (0.5 means half of physical cores are busy)
+# This will be multiplied by the number of physical cores to get the actual threshold
+LOAD_THRESHOLD_RATIO=0.5
 
 # Time (in seconds) between each load check.
 CHECK_INTERVAL=300 # 5 minutes
@@ -17,6 +17,34 @@ CONSECUTIVE_CHECKS_REQUIRED=3
 
 # Path to the log file.
 LOG_FILE="/var/log/auto_suspend.log"
+
+# Function to get the number of physical CPU cores (not threads)
+get_physical_cores() {
+    # Get the number of unique physical processors and multiply by cores per processor
+    local physical_cpus cores_per_processor
+
+    if ! physical_cpus=$(grep -E "^physical id" /proc/cpuinfo | sort | uniq | wc -l); then
+        log "Error: Failed to determine number of physical CPUs"
+        return 1
+    fi
+
+    if ! cores_per_processor=$(grep -E "^cpu cores" /proc/cpuinfo | head -1 | awk '{print $4}'); then
+        log "Error: Failed to determine cores per processor"
+        return 1
+    fi
+
+    # Handle cases where the system might not report physical id (single CPU systems)
+    if [ "${physical_cpus}" -eq 0 ]; then
+        physical_cpus=1
+    fi
+
+    # Handle cases where cores per processor might be empty
+    if [ -z "${cores_per_processor}" ]; then
+        cores_per_processor=1
+    fi
+
+    echo $((physical_cpus * cores_per_processor))
+}
 
 # Function to log messages with a timestamp
 log() {
@@ -48,7 +76,17 @@ perform_suspend() {
 }
 
 log "Auto-suspend script started. PID: $$"
-log "Configuration: Load Threshold=${LOAD_THRESHOLD}, Check Interval=${CHECK_INTERVAL}s, Consecutive Checks=${CONSECUTIVE_CHECKS_REQUIRED}"
+
+# Determine physical CPU cores and calculate actual load threshold
+if ! PHYSICAL_CORES=$(get_physical_cores); then
+    log "Error: Failed to determine physical CPU cores"
+    exit 1
+fi
+
+LOAD_THRESHOLD=$(echo "${LOAD_THRESHOLD_RATIO} * ${PHYSICAL_CORES}" | bc -l)
+
+log "System has ${PHYSICAL_CORES} physical CPU cores"
+log "Configuration: Load Threshold Ratio=${LOAD_THRESHOLD_RATIO}, Actual Threshold=${LOAD_THRESHOLD}, Check Interval=${CHECK_INTERVAL}s, Consecutive Checks=${CONSECUTIVE_CHECKS_REQUIRED}"
 
 # Initialize counter for consecutive low-load checks
 low_load_count=0
