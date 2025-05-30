@@ -1,4 +1,4 @@
-# linux-low-load-autosuspend
+# (IN DEVELOPMENT) linux-low-load-autosuspend
 
 Utility service to automatically suspend devices with low load on Linux.
 
