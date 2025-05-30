@@ -125,7 +125,7 @@ if test "${EUID}" -ne 0; then
     exit 1
 fi
 
-log "Auto-suspend script started. PID: $$"
+log "Info: Auto-suspend script started. PID: $$"
 
 # Determine physical CPU cores and calculate actual load threshold
 if ! PHYSICAL_CORES=$(get_physical_cores); then
