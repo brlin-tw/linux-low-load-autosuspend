@@ -16,8 +16,10 @@ variables:
   SECRET_DETECTION_ENABLED: 'true'
 
 stages:
-  - test
   - secret-detection
+  - test
+  - build
+  - deploy
 
 secret_detection:
   stage: secret-detection
