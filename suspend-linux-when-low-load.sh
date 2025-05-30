@@ -27,7 +27,7 @@ NO_SLEEP_FILE="/tmp/no_auto_suspend"
 
 # Function to log messages with a timestamp
 log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "${LOG_FILE}"
 }
 
 # Function to get the current 5-minute load average
@@ -59,25 +59,25 @@ low_load_count=0
 while true; do
     # 1. Get current load average
     current_load=$(get_load_average)
-    log "Current 5-min load average: $current_load"
+    log "Current 5-min load average: ${current_load}"
 
     # 2. Check for manual override file
-    if [ -f "$NO_SLEEP_FILE" ]; then
-        log "Override file '$NO_SLEEP_FILE' found. Suspend prevented."
+    if [ -f "${NO_SLEEP_FILE}" ]; then
+        log "Override file '${NO_SLEEP_FILE}' found. Suspend prevented."
         low_load_count=0 # Reset count as we're intentionally not suspending
-        sleep "$CHECK_INTERVAL"
+        sleep "${CHECK_INTERVAL}"
         continue # Skip to next loop iteration
     fi
 
     # 3. Check if load is below threshold
     # Using 'bc -l' for floating point comparison
-    if (( $(echo "$current_load < $LOAD_THRESHOLD" | bc -l) )); then
+    if (( $(echo "${current_load} < ${LOAD_THRESHOLD}" | bc -l) )); then
         # Load is low. Increment counter.
         low_load_count=$((low_load_count + 1))
-        log "Load is low ($current_load < $LOAD_THRESHOLD). Low load count: $low_load_count/$CONSECUTIVE_CHECKS_REQUIRED"
+        log "Load is low (${current_load} < ${LOAD_THRESHOLD}). Low load count: ${low_load_count}/${CONSECUTIVE_CHECKS_REQUIRED}"
 
         # 4. Check if consecutive low-load conditions are met
-        if [ "$low_load_count" -ge "$CONSECUTIVE_CHECKS_REQUIRED" ]; then
+        if [ "${low_load_count}" -ge "${CONSECUTIVE_CHECKS_REQUIRED}" ]; then
             # All conditions met: load is low consistently, no active users, no override.
             log "All conditions met: Load consistently low, system inactive."
             perform_suspend
@@ -86,14 +86,14 @@ while true; do
         fi
     else
         # Load is NOT low. Reset the counter if it was accumulating.
-        if [ "$low_load_count" -gt 0 ]; then
-            log "Load is no longer low ($current_load >= $LOAD_THRESHOLD). Resetting low load count."
+        if [ "${low_load_count}" -gt 0 ]; then
+            log "Load is no longer low (${current_load} >= ${LOAD_THRESHOLD}). Resetting low load count."
             low_load_count=0
         else
-            log "Load is high ($current_load >= $LOAD_THRESHOLD). Not accumulating."
+            log "Load is high (${current_load} >= ${LOAD_THRESHOLD}). Not accumulating."
         fi
     fi
 
     # Wait for the next check interval
-    sleep "$CHECK_INTERVAL"
+    sleep "${CHECK_INTERVAL}"
 done
