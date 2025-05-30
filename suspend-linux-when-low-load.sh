@@ -85,27 +85,27 @@ fi
 
 LOAD_THRESHOLD=$(echo "${LOAD_THRESHOLD_RATIO} * ${PHYSICAL_CORES}" | bc -l)
 
-log "System has ${PHYSICAL_CORES} physical CPU cores"
-log "Configuration: Load Threshold Ratio=${LOAD_THRESHOLD_RATIO}, Actual Threshold=${LOAD_THRESHOLD}, Check Interval=${CHECK_INTERVAL}s, Consecutive Checks=${CONSECUTIVE_CHECKS_REQUIRED}"
+log "Info: System has ${PHYSICAL_CORES} physical CPU cores"
+log "Info: Configuration: Load Threshold Ratio=${LOAD_THRESHOLD_RATIO}, Actual Threshold=${LOAD_THRESHOLD}, Check Interval=${CHECK_INTERVAL}s, Consecutive Checks=${CONSECUTIVE_CHECKS_REQUIRED}"
 
 # Initialize counter for consecutive low-load checks
 low_load_count=0
 
 while true; do
     if ! current_load=$(get_load_average); then
-        log "Failed to determine load average."
+        log "Error: Failed to determine load average."
         exit 1
     fi
-    log "Current 5-min load average: ${current_load}"
+    log "Info: Current 5-min load average: ${current_load}"
 
     if (( $(echo "${current_load} < ${LOAD_THRESHOLD}" | bc -l) )); then
         # Load is low. Increment counter.
         low_load_count=$((low_load_count + 1))
-        log "Load is low (${current_load} < ${LOAD_THRESHOLD}). Low load count: ${low_load_count}/${CONSECUTIVE_CHECKS_REQUIRED}"
+        log "Info: Load is low (${current_load} < ${LOAD_THRESHOLD}). Low load count: ${low_load_count}/${CONSECUTIVE_CHECKS_REQUIRED}"
 
         if [ "${low_load_count}" -ge "${CONSECUTIVE_CHECKS_REQUIRED}" ]; then
             # All conditions met: load is low consistently, no active users, no override.
-            log "All conditions met: Load consistently low, system inactive."
+            log "Info: All conditions met: Load consistently low, system inactive."
             if ! perform_suspend; then
                 log "Error: Failed to perform suspend."
                 exit 1
@@ -116,10 +116,10 @@ while true; do
     else
         # Load is NOT low. Reset the counter if it was accumulating.
         if [ "${low_load_count}" -gt 0 ]; then
-            log "Load is no longer low (${current_load} >= ${LOAD_THRESHOLD}). Resetting low load count."
+            log "Info: Load is no longer low (${current_load} >= ${LOAD_THRESHOLD}). Resetting low load count."
             low_load_count=0
         else
-            log "Load is high (${current_load} >= ${LOAD_THRESHOLD}). Not accumulating."
+            log "Info: Load is high (${current_load} >= ${LOAD_THRESHOLD}). Not accumulating."
         fi
     fi
 
