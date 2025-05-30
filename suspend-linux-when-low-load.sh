@@ -85,5 +85,8 @@ while true; do
         fi
     fi
 
-    sleep "${CHECK_INTERVAL}"
+    if ! sleep "${CHECK_INTERVAL}"; then
+        log "Error: Failed to sleep periodically during check."
+        exit 1
+    fi
 done
