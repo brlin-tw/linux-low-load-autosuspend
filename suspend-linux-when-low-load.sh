@@ -135,6 +135,8 @@ while true; do
             fi
             # After suspend and resume, reset the count to prevent immediate re-suspend
             low_load_count=0
+
+            break
         fi
     else
         # Load is NOT low. Reset the counter if it was accumulating.
@@ -151,3 +153,6 @@ while true; do
         exit 1
     fi
 done
+
+log "Info: Operation completed without errors."
+exit 0
