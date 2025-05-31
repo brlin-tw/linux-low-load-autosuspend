@@ -173,6 +173,12 @@ fi
 
 LOAD_THRESHOLD=$(echo "${LOAD_THRESHOLD_RATIO} * ${PHYSICAL_CORES}" | bc -l)
 
+# Ensure leading zero for numbers less than 1
+readonly regex_floating_point_numbers_less_than_one='^\.[0-9]+$'
+if [[ "${LOAD_THRESHOLD}" =~ ${regex_floating_point_numbers_less_than_one} ]]; then
+    LOAD_THRESHOLD="0${LOAD_THRESHOLD}"
+fi
+
 log "Info: System has ${PHYSICAL_CORES} physical CPU cores"
 log "Info: Configuration: Load Threshold Ratio=${LOAD_THRESHOLD_RATIO}, Actual Threshold=${LOAD_THRESHOLD}, Check Interval=${CHECK_INTERVAL}s, Consecutive Checks=${CONSECUTIVE_CHECKS_REQUIRED}"
 
