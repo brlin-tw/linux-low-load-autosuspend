@@ -6,7 +6,7 @@ Utility to automatically suspend the system with low load on Linux. This is usef
 [![The GitLab CI pipeline status badge of the project's `main` branch](https://gitlab.com/brlin/linux-low-load-autosuspend/badges/main/pipeline.svg?ignore_skipped=true "Click here to check out the comprehensive status of the GitLab CI pipelines")](https://gitlab.com/brlin/linux-low-load-autosuspend/-/pipelines) [![GitHub Actions workflow status badge](https://github.com/brlin-tw/linux-low-load-autosuspend/actions/workflows/check-potential-problems.yml/badge.svg "GitHub Actions workflow status")](https://github.com/brlin-tw/linux-low-load-autosuspend/actions/workflows/check-potential-problems.yml) [![pre-commit enabled badge](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white "This project uses pre-commit to check potential problems")](https://pre-commit.com/) [![REUSE Specification compliance badge](https://api.reuse.software/badge/gitlab.com/brlin/linux-low-load-autosuspend "This project complies to the REUSE specification to decrease software licensing costs")](https://api.reuse.software/info/gitlab.com/brlin/linux-low-load-autosuspend)  
 \#linux \#suspend-to-ram \#power-management \#utility \#bash
 
-## Prerequisites
+## Prerequisites ⚙️
 
 This utility requires a Linux system with the following software installed and their commands available in the command search PATHs:
 
@@ -25,7 +25,7 @@ This utility requires a Linux system with the following software installed and t
 
 The monitoring program must be run as a superuser (root) user, as it needs to call the `systemctl suspend` command to suspend the system.
 
-## Usage
+## Usage 📖
 
 Refer to the following instructions to use this utility:
 
@@ -40,9 +40,9 @@ Refer to the following instructions to use this utility:
 
    Replace the `X.Y.Z` placeholder text to the actual version number of the release archive you downloaded.
 
-   You can customize the monitoring behavior by using the environment variables documented in [the "Environment variables that can influence the behavior of the utility" chapter](#environment-variables-that-can-influence-the-behavior-of-the-utility)
+   You can customize the monitoring behavior by using the environment variables documented in [the "Environment variables that can influence the behavior of the utility" chapter](#environment-variables-that-can-influence-the-behavior-of-the-utility-)
 
-## Environment variables that can influence the behavior of the utility
+## Environment variables that can influence the behavior of the utility 🔧
 
 The following environment variables can be set to influence the behavior of the utility:
 
@@ -64,14 +64,14 @@ How many consecutive "low load" check results should the monitoring utility give
 
 **Default value:** `3`
 
-## References
+## References 📚
 
 The following materials are referenced during the development of this project:
 
 * ["How do I make a Linux system go to sleep after the average system load is under a certain threshold?" LLM response - HackMD](https://hackmd.io/@brlin/HJKJ01Dfgg)  
   Provides the initial implementation.
 
-## Licensing
+## Licensing 📄
 
 Unless otherwise noted([comment headers](https://reuse.software/spec-3.3/#comment-headers)/[REUSE.toml](https://reuse.software/spec-3.3/#reusetoml)), this product is licensed under [the 3.0 version of the GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html), or any of its more recent versions of your preference.
 
