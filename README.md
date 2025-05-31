@@ -6,6 +6,25 @@ Utility to automatically suspend the system with low load on Linux. This is usef
 [![The GitLab CI pipeline status badge of the project's `main` branch](https://gitlab.com/brlin/linux-low-load-autosuspend/badges/main/pipeline.svg?ignore_skipped=true "Click here to check out the comprehensive status of the GitLab CI pipelines")](https://gitlab.com/brlin/linux-low-load-autosuspend/-/pipelines) [![GitHub Actions workflow status badge](https://github.com/brlin-tw/linux-low-load-autosuspend/actions/workflows/check-potential-problems.yml/badge.svg "GitHub Actions workflow status")](https://github.com/brlin-tw/linux-low-load-autosuspend/actions/workflows/check-potential-problems.yml) [![pre-commit enabled badge](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white "This project uses pre-commit to check potential problems")](https://pre-commit.com/) [![REUSE Specification compliance badge](https://api.reuse.software/badge/gitlab.com/brlin/linux-low-load-autosuspend "This project complies to the REUSE specification to decrease software licensing costs")](https://api.reuse.software/info/gitlab.com/brlin/linux-low-load-autosuspend)  
 \#linux \#suspend-to-ram \#power-management \#utility \#bash
 
+## Prerequisites
+
+This utility requires a Linux system with the following software installed and their commands available in the command search PATHs:
+
+* [GNU AWK (gawk)](https://www.gnu.org/software/gawk/)  
+  For parsing system load information from `/proc/loadavg`.
+* [GNU Bash](https://www.gnu.org/software/bash/)  
+  Provides the runtime where the monitoring program runs in.
+* [GNU bc](https://www.gnu.org/software/bc/)  
+  For floating-point arithmetic calculations of load thresholds.
+* [GNU coreutils](https://www.gnu.org/software/coreutils/)  
+  Provides `head`, `sort`, `tee`, `uniq`, and `wc` commands for text processing.
+* [GNU grep](https://www.gnu.org/software/grep/)  
+  For filtering CPU information from `/proc/cpuinfo`.
+* [systemd](https://systemd.io/)  
+  Provides the `systemctl` command for system suspend functionality.
+
+The monitoring program must be run as a superuser (root) user, as it needs to call the `systemctl suspend` command to suspend the system.
+
 ## Usage
 
 Refer to the following instructions to use this utility:
