@@ -64,6 +64,10 @@ How many consecutive "low load" check results should the monitoring utility give
 
 **Default value:** `3`
 
+## Troubleshooting 🐞
+
+If you encounter any issues with the utility, please check the logs: /var/log/suspend-linux-when-low-load.log.
+
 ## References 📚
 
 The following materials are referenced during the development of this project:
