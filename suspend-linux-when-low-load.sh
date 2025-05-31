@@ -196,9 +196,6 @@ while true; do
                 log "Error: Failed to perform suspend."
                 exit 1
             fi
-            # After suspend and resume, reset the count to prevent immediate re-suspend
-            low_load_count=0
-
             break
         fi
     else
