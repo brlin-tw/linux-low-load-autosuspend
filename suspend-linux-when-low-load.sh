@@ -166,21 +166,21 @@ fi
 log "Info: Auto-suspend script started. PID: $$"
 
 # Determine physical CPU cores and calculate actual load threshold
-if ! PHYSICAL_CORES=$(get_physical_cores); then
+if ! physical_cores=$(get_physical_cores); then
     log "Error: Failed to determine physical CPU cores"
     exit 1
 fi
 
-LOAD_THRESHOLD=$(echo "${LOAD_THRESHOLD_RATIO} * ${PHYSICAL_CORES}" | bc -l)
+load_threshold=$(echo "${LOAD_THRESHOLD_RATIO} * ${physical_cores}" | bc -l)
 
 # Ensure leading zero for numbers less than 1
 readonly regex_floating_point_numbers_less_than_one='^\.[0-9]+$'
-if [[ "${LOAD_THRESHOLD}" =~ ${regex_floating_point_numbers_less_than_one} ]]; then
-    LOAD_THRESHOLD="0${LOAD_THRESHOLD}"
+if [[ "${load_threshold}" =~ ${regex_floating_point_numbers_less_than_one} ]]; then
+    load_threshold="0${load_threshold}"
 fi
 
-log "Info: System has ${PHYSICAL_CORES} physical CPU cores"
-log "Info: Configuration: Load Threshold Ratio=${LOAD_THRESHOLD_RATIO}, Actual Threshold=${LOAD_THRESHOLD}, Check Interval=${CHECK_INTERVAL}s, Consecutive Checks=${CONSECUTIVE_CHECKS_REQUIRED}"
+log "Info: System has ${physical_cores} physical CPU cores"
+log "Info: Configuration: Load Threshold Ratio=${LOAD_THRESHOLD_RATIO}, Actual Threshold=${load_threshold}, Check Interval=${CHECK_INTERVAL}s, Consecutive Checks=${CONSECUTIVE_CHECKS_REQUIRED}"
 
 # Initialize counter for consecutive low-load checks
 low_load_count=0
@@ -192,9 +192,9 @@ while true; do
     fi
     log "Info: Current 5-min load average: ${current_load}"
 
-    if (( $(echo "${current_load} < ${LOAD_THRESHOLD}" | bc -l) )); then
+    if (( $(echo "${current_load} < ${load_threshold}" | bc -l) )); then
         low_load_count=$((low_load_count + 1))
-        log "Info: Load is low (${current_load} < ${LOAD_THRESHOLD}). Low load count: ${low_load_count}/${CONSECUTIVE_CHECKS_REQUIRED}"
+        log "Info: Load is low (${current_load} < ${load_threshold}). Low load count: ${low_load_count}/${CONSECUTIVE_CHECKS_REQUIRED}"
 
         if test "${low_load_count}" -ge "${CONSECUTIVE_CHECKS_REQUIRED}"; then
             log "Info: All conditions met: Load consistently low, system inactive."
@@ -207,10 +207,10 @@ while true; do
     else
         # Load is NOT low. Reset the counter if it was accumulating.
         if test "${low_load_count}" -gt 0; then
-            log "Info: Load is no longer low (${current_load} >= ${LOAD_THRESHOLD}). Resetting low load count."
+            log "Info: Load is no longer low (${current_load} >= ${load_threshold}). Resetting low load count."
             low_load_count=0
         else
-            log "Info: Load is high (${current_load} >= ${LOAD_THRESHOLD}). Not accumulating."
+            log "Info: Load is high (${current_load} >= ${load_threshold}). Not accumulating."
         fi
     fi
 
