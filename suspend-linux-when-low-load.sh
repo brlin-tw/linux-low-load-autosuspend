@@ -8,9 +8,6 @@ LOAD_THRESHOLD_RATIO="${LOAD_THRESHOLD_RATIO:-0.5}"
 CHECK_INTERVAL="${CHECK_INTERVAL:-300}" # 5 minutes
 CONSECUTIVE_CHECKS_REQUIRED="${CONSECUTIVE_CHECKS_REQUIRED:-3}"
 
-# Path to the log file.
-LOG_FILE="/var/log/auto_suspend.log"
-
 set_opts=(
     # Exit on unhandled errors
     -o errexit
@@ -82,9 +79,9 @@ log() {
     log_entry="${timestamp} - ${message}"
 
     if test "${flag_msg_to_stderr}" == true; then
-        printf '%s\n' "${log_entry}" | tee -a "${LOG_FILE}" 1>&2
+        printf '%s\n' "${log_entry}" | tee -a "${log_file}" 1>&2
     else
-        printf '%s\n' "${log_entry}" | tee -a "${LOG_FILE}"
+        printf '%s\n' "${log_entry}" | tee -a "${log_file}"
     fi
     return 0
 }
@@ -130,6 +127,11 @@ for command in "${required_commands[@]}"; do
         exit 1
     fi
 done
+
+script="${BASH_SOURCE[0]}"
+script_filename="${script##*/}"
+script_name="${script_filename%.*}"
+log_file="/var/log/${script_name}.log"
 
 readonly regex_positive_floating_point_number='^[0-9]+(\.[0-9]+)?$'
 if [[ ! "${LOAD_THRESHOLD_RATIO}" =~ ${regex_positive_floating_point_number} ]]; then
