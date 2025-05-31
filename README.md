@@ -6,6 +6,16 @@ Utility to automatically suspend the system with low load on Linux. This is usef
 [![The GitLab CI pipeline status badge of the project's `main` branch](https://gitlab.com/brlin/linux-low-load-autosuspend/badges/main/pipeline.svg?ignore_skipped=true "Click here to check out the comprehensive status of the GitLab CI pipelines")](https://gitlab.com/brlin/linux-low-load-autosuspend/-/pipelines) [![GitHub Actions workflow status badge](https://github.com/brlin-tw/linux-low-load-autosuspend/actions/workflows/check-potential-problems.yml/badge.svg "GitHub Actions workflow status")](https://github.com/brlin-tw/linux-low-load-autosuspend/actions/workflows/check-potential-problems.yml) [![pre-commit enabled badge](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white "This project uses pre-commit to check potential problems")](https://pre-commit.com/) [![REUSE Specification compliance badge](https://api.reuse.software/badge/gitlab.com/brlin/linux-low-load-autosuspend "This project complies to the REUSE specification to decrease software licensing costs")](https://api.reuse.software/info/gitlab.com/brlin/linux-low-load-autosuspend)  
 \#linux \#suspend-to-ram \#power-management \#utility \#bash
 
+## Features ✨
+
+The following features are provided by this utility:
+
+* Accounting for the number of physical CPU cores on the system.
+* Monitoring behaviors can be easily customized by [environment variables](#environment-variables-that-can-influence-the-behavior-of-the-utility-).
+* Would bail out when:
+    + The runtime dependencies are not met.
+    + Any unhandled error occurs during the monitoring process.
+
 ## Prerequisites ⚙️
 
 This utility requires a Linux system with the following software installed and their commands available in the command search PATHs:
