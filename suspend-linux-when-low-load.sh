@@ -187,12 +187,10 @@ while true; do
     log "Info: Current 5-min load average: ${current_load}"
 
     if (( $(echo "${current_load} < ${LOAD_THRESHOLD}" | bc -l) )); then
-        # Load is low. Increment counter.
         low_load_count=$((low_load_count + 1))
         log "Info: Load is low (${current_load} < ${LOAD_THRESHOLD}). Low load count: ${low_load_count}/${CONSECUTIVE_CHECKS_REQUIRED}"
 
         if test "${low_load_count}" -ge "${CONSECUTIVE_CHECKS_REQUIRED}"; then
-            # All conditions met: load is low consistently, no active users, no override.
             log "Info: All conditions met: Load consistently low, system inactive."
             if ! perform_suspend; then
                 log "Error: Failed to perform suspend."
