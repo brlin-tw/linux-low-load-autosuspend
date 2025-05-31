@@ -1,4 +1,4 @@
-# (IN DEVELOPMENT) linux-low-load-autosuspend
+# linux-low-load-autosuspend
 
 Utility service to automatically suspend devices with low load on Linux.  This is useful for saving power on hosts that will temporarily under heavy load, but cannot automate the suspend process due to the nature of the workload, such as running a Windows build in a guest VM.
 
