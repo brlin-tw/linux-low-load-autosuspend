@@ -131,6 +131,33 @@ for command in "${required_commands[@]}"; do
     fi
 done
 
+readonly regex_positive_floating_point_number='^[0-9]+(\.[0-9]+)?$'
+if [[ ! "${LOAD_THRESHOLD_RATIO}" =~ ${regex_positive_floating_point_number} ]]; then
+    log "Error: LOAD_THRESHOLD_RATIO must be a positive floating-point number."
+    exit 1
+fi
+
+readonly regex_natural_number='^[1-9]+[0-9]*$'
+if [[ ! "${CHECK_INTERVAL}" =~ ${regex_natural_number} ]]; then
+    log "Error: CHECK_INTERVAL must be a natural number (positive integer)."
+    exit 1
+fi
+
+if test "${CHECK_INTERVAL}" -lt 10; then
+    log "Error: CHECK_INTERVAL must be at least 10 seconds."
+    exit 1
+fi
+
+if [[ ! "${CONSECUTIVE_CHECKS_REQUIRED}" =~ ${regex_natural_number} ]]; then
+    log "Error: CONSECUTIVE_CHECKS_REQUIRED must be a natural number (positive integer)."
+    exit 1
+fi
+
+if test "${CONSECUTIVE_CHECKS_REQUIRED}" -lt 1; then
+    log "Error: CONSECUTIVE_CHECKS_REQUIRED must be at least 1."
+    exit 1
+fi
+
 if test "${EUID}" -ne 0; then
     printf 'Error: This script must be run as root.\n' 1>&2
     exit 1
